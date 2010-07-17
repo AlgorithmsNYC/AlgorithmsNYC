@@ -1,0 +1,87 @@
+Problem #1
+
+Problem Statement
+
+You are given a String[] data representing a rectangular grid where
+each cell contains a digit. Find the largest square in this grid that
+contains the same digit in all of its corner cells. The sides of the
+square must be parallel to the sides of the grid. If there is more
+than one such largest square, pick any one of them.
+
+Return the number of cells in the square. Note that a single cell is
+also considered a square, so there will always be an answer.
+
+Definition
+
+Class:  SquareOfDigits
+Method: getMax
+Parameters:     String[]
+Returns:        int
+Method signature:       int getMax(String[] data)
+(be sure your method is public)
+
+
+Constraints
+-       data will contain between 1 and 50 elements, inclusive.
+-       Each element of data will contain between 1 and 50 digits ('0'-'9'),
+inclusive.
+-       All elements of data will have the same length.
+
+Examples
+
+0)
+
+
+{"12",
+ "34"}
+
+Returns: 1
+
+All digits in the grid are different, so the biggest feasible square
+has only one cell.
+
+1)
+
+
+{"1255",
+ "3455"}
+
+Returns: 4
+
+Four '5' digits form a feasible square.
+
+2)
+
+
+{"42101",
+ "22100",
+ "22101"}
+
+Returns: 9
+
+The largest square here is the 3 x 3 square that contains the digit
+'1' in each of its corner cells.
+
+3)
+
+
+{"1234567890"}
+
+Returns: 1
+
+4)
+
+
+{"9785409507",
+ "2055103694",
+ "0861396761",
+ "3073207669",
+ "1233049493",
+ "2300248968",
+ "9769239548",
+ "7984130001",
+ "1670020095",
+ "8894239889",
+ "4053971072"}
+
+Returns: 49
