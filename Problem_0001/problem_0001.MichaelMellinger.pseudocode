@@ -1,0 +1,8 @@
+// Square implies column distance equals row distance
+
+maxSize=1 // first value is a square of size 1 by definition
+foreach row
+  find two equal numbers
+   Calculate the distance between the two columns
+    Verify that the same numbers exist at [row + distance] for both columns
+     maxSize = max(maxSize, distance^2) 
