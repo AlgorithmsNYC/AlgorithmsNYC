@@ -1,4 +1,5 @@
 import unittest
+from math import factorial
 
 #Analysis
 #0-0
@@ -28,28 +29,32 @@ import unittest
 # aaaa baa  aba  aab  bb
 
 
-# 5-7
-# 1 + 4 + 2
-# XXXXX xXXX XxXXX XXxX XXXx xxX
-# XXXXX xXXX XxXXX XXxX XXXx xxX
+# 5-8
+# 1 + 4 + 3
+# XXXXX xXXX XxXXX XXxX XXXx Xxx xXx xxX
+# XXXXX xXXX XxXXX XXxX XXXx Xxx xXx xxX
 
-# General form :
-# if n = 0
-#  return 0
-# else
-#  return 1 + (n - 2 + 1) + (n - 2x2 + 1) + (n - 2x2x2 + 1) ....
+# 6 
+# 0 b's = 1
+# 1 b's = 5
+# 2 b's = 6
+# 3 b's = 1
 
 def count_brick_configs (x):
     if (x == 0):
         return 0
-    else:
-        retval = 1
-        for i in range (0,x/2):
-            retval += x - 2 * (i + 1) + 1
+    
+    max_b = x / 2
+    retval = 1
+    for num_b in range (1, max_b + 1):
+        num_a = x - (2 * num_b )
+        alphabet_len = num_b + num_a
+        retval += factorial(alphabet_len) / ( factorial(num_a) * factorial(num_b))
     return retval
 
+        
 class test_brick_config(unittest.TestCase):
-    knownValues = ((0,0),(1,1),(2,2),(3,3),(4,5), (5,7))
+    knownValues = ((0,0),(1,1),(2,2),(3,3),(4,5), (5,8))
 
     def testConfigurations(self):                          
         """testing if brick config works"""
