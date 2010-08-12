@@ -1,6 +1,5 @@
 <?PHP
 
-
 define('TEST', true);
 define('PRIME_START', 3);
 
@@ -18,8 +17,7 @@ class Underprimes
 		$fc = 0;
 		while($A <= $B) {
 
-			$fc += (in_array(count($this->prime_factorization($A)), $this->prime_cache)) ? 1 : 0;
-			$A++;
+			$fc += (in_array(count($this->prime_factorization($A++)), $this->prime_cache)) ? 1 : 0;
 		}
 		return $fc;
 	}
@@ -27,6 +25,7 @@ class Underprimes
 	private function prime_factorization($finish) {
 		
 		$dividend = $finish;
+		$inner_finish = ceil(sqrt($finish+2);
 		//start generating primes where we left off if this method has been run before
 		$highest_generated_prime = $this->prime_cache[count($this->prime_cache)-1];
 		$next_odd = ($highest_generated_prime != 2) ? $highest_generated_prime + 2 : PRIME_START;
@@ -34,7 +33,7 @@ class Underprimes
 		for($x=$next_odd;$x<=$finish;$x=$x+2) {
 
 			$prime_flag = true;
-			for($y=PRIME_START;$y<=$finish;$y=$y+2) {
+			for($y=PRIME_START;$y<=$inner_finish;$y=$y+2) {
 
 				if($x%$y == 0 && $x != $y) $prime_flag = false;
 			}
@@ -61,7 +60,6 @@ class Underprimes
 		}
 
 		return $ret;
-
 	}
 
 	public function __destructor() {}
