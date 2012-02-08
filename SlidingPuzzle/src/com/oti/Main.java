@@ -26,6 +26,7 @@ package com.oti;
 
 import com.oti.solutions.eb.EBDistanceCostFunction;
 import com.oti.solutions.eb.EBSolver;
+import com.oti.solutions.sam.SASolver;
 
 /**
  * This main class is used to evaluate the success and performance of a provided
@@ -105,7 +106,8 @@ public class Main {
         System.out.println();
         System.out.println("************* Solve Puzzle ************");
         Board boardInInitialState = board.clone();
-        EBSolver solver = new EBSolver(new EBDistanceCostFunction(4));
+        //EBSolver solver = new EBSolver(new EBDistanceCostFunction(4));
+        SASolver solver = new SASolver();
 //        com.oti.Solver solver = new com.oti.FakeSolver(new com.oti.SimpleCostFunction());
         Solution solution = solver.solveBoard(board, showChanges);
 
