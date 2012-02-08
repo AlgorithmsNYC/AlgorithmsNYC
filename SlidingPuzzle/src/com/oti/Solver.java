@@ -57,7 +57,12 @@ public abstract class Solver {
     public double getSolutionTimeInMin() {
         return (_solutionTimeInMs / 1000.0) / 60.0;
     }
-
+    public long getSolutionTimeInSec() {
+        return (_solutionTimeInMs / 1000);
+    }
+    public long getSolutionTimeMilliSec() {
+        return _solutionTimeInMs;
+    }
 
 
     public Solution solveBoard(Board board, boolean showChanges) throws CloneNotSupportedException, PuzzleException {
