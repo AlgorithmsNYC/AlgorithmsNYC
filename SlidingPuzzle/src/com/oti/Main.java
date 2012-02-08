@@ -119,7 +119,7 @@ public class Main {
         // Show results
         System.out.println("\nPuzzle: ");
         boardInInitialState.describeBoard();
-        System.out.printf("\ncom.oti.Solution: (%.2f min)\n", solver.getSolutionTimeInMin());
+        System.out.printf("\ncom.oti.Solution: %d:%d sec:milli\n", solver.getSolutionTimeMilliSec()/1000, solver.getSolutionTimeMilliSec()%1000);
         solution.describeSolution();
         System.out.println("\nResults: ");
         resultsOfSolution.describeBoard();

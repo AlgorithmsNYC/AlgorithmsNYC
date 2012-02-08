@@ -25,6 +25,7 @@ public class SASolver extends Solver {
 		public Evalue() {}
 	}
 	static class FrontierLeaf {
+		int value; // order value 
 		int cost; // nb steps from start
 		BigInteger state=null; // current board
 		byte prevAction; // "this" results from prevAction
@@ -38,9 +39,36 @@ public class SASolver extends Solver {
 		public int compare(Object o1, Object o2) {
 			FrontierLeaf f1 = (FrontierLeaf)o1;
 			FrontierLeaf f2 = (FrontierLeaf)o2;
-			return (f1.cost <f2.cost) ? -1 : ((f1.cost ==f2.cost)? 0 : 1 );
+			return (f1.value <f2.value) ? -1 : ((f1.value ==f2.value)? 0 : 1 );
 		}
 	}	
+	static interface Heuristic {
+		public int distanceToArrival(BigInteger arrival);
+	}
+	
+	static class HeuristicByPermutation implements Heuristic{
+		byte[] m_arrival;
+		public HeuristicByPermutation(BigInteger arrival) {
+			m_arrival = arrival.toByteArray();			
+		}
+
+		/**
+		 * Heuristic based on the number of direct permutation between state and arrival
+		 * */
+		public int distanceToArrival(BigInteger state) {
+			byte[] bstate = state.toByteArray();
+			int differences = 0;
+			int diff = 0;
+			for (int i = 0; i < bstate.length; i++) {
+				diff = m_arrival[i]-bstate[i];
+				if (diff !=0) {
+					differences += (0x0F & diff)!=0 ? 1 : 0; 					
+					differences += (0x0F & (diff >> 4))!=0 ? 1 : 0; 
+				}
+			}					
+			return differences/2;
+		}
+	}		
 	
 	BigInteger arrivalState;
 	public SASolver(CostFunction costFunction) {
@@ -52,7 +80,7 @@ public class SASolver extends Solver {
 		super(null);
 	}
 	
-	
+	Heuristic m_hFunc=null;
 	@Override
 	protected Solution solve(Board board, boolean showChanges) throws PuzzleException, CloneNotSupportedException {
 		HashMap<BigInteger, Evalue> visitedNodes = new HashMap<BigInteger, Evalue>();
@@ -65,7 +93,7 @@ public class SASolver extends Solver {
 		board.makeMove(new Move(Piece.pieceForNumber(7), Location.locationFor(2, 2, 4)), true);
 		board.makeMove(new Move(Piece.pieceForNumber(6), Location.locationFor(2, 1, 4)), true);*/
         
-		
+		m_hFunc = new HeuristicByPermutation(arrivalState);
 		FrontierLeaf currLeaf = buildInitialLeaf(board);
 		Evalue currEvalue = createEvalue(currLeaf);
 		// store evalue for fast retrieval
@@ -104,12 +132,11 @@ public class SASolver extends Solver {
 		while(!currEvalue.state.equals(arrivalState)) {
 			++counter;
 			
-			if (counter%1000==0)
-				System.out.println(" propagation loop :"+ counter);
+			if (counter%1000==0) {
+				System.out.println(" propagation loop :"+ counter+" cost :"+ currLeaf.cost+" value :"+ currLeaf.value);
+				
+			}
 
-			if (currLeaf.cost%100==0)
-				System.out.println(" propagation loop, cost :"+ currLeaf.cost);
-			
 			// explore moves from current evalue
 			int zeroCellIndex = getZeroCellIndex(currEvalue.state);
 			if ((zeroCellIndex%4) +1 < 4) { // move empty cell to the right
@@ -260,6 +287,7 @@ public class SASolver extends Solver {
 	private void createNewLeaf(PriorityQueue<FrontierLeaf> frontierSet, FrontierLeaf currLeaf, Evalue currEvalue, byte action, BigInteger newState) {
 		FrontierLeaf newLeaf = new FrontierLeaf();
 		newLeaf.cost = currLeaf.cost + 1;
+		newLeaf.value = newLeaf.cost + m_hFunc.distanceToArrival(newState);
 		newLeaf.state= newState;
 		newLeaf.prevAction = action;
 		newLeaf.previous=currEvalue;						
