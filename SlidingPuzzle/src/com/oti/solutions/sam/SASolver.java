@@ -18,16 +18,71 @@ import com.oti.Solution;
 import com.oti.Solver;
 
 public class SASolver extends Solver {
+	
+	static class StateCode {
+	    /**
+	     * This mask is used to obtain the value of an int as if it were unsigned.
+	     */
+	    final static long LONG_MASK = 0xffffffffL;		
+		byte[] mag;
+
+		StateCode() {
+			mag = new byte[8]; 
+		}
+		
+		public StateCode(StateCode istate) {
+			mag = new byte[8]; 
+			System.arraycopy(istate.toByteArray(), 0, mag, 0, 8);
+		}
+
+		public int hashCode() {
+	        int hashCode = 0;
+	
+	        for (int i=0; i<mag.length; i++)
+	            hashCode = (int)(31*hashCode + (mag[i] & LONG_MASK));
+	
+	        return hashCode;
+	    }
+//	    public boolean equals(Object x) {
+//	        if (!(x instanceof StateCode))
+//	            return false;
+//	    	return equals((StateCode)x);
+//	    }
+//	    public boolean equals(StateCode x) {
+//	    	return new BigInteger(mag).equals(new BigInteger(x.mag));
+//	    }
+		
+	    public boolean equals(StateCode x) {
+	        // This test is just an optimization, which may or may not help
+	        if (x == this)
+	            return true;
+
+	        byte[] m = mag;
+	        int len = m.length;
+	        byte[] xm = x.mag;
+
+	        for (int i = 0; i < len; i++)
+	            if (xm[i] != m[i])
+	                return false;
+
+	        return true;
+	    }
+		public byte[] toByteArray() {
+			return mag;
+		}
+	}
+
+	
 	static class Evalue {
 		Evalue parent = null;
-		BigInteger state=null; // code for the current board
+		StateCode state=null; // code for the current board
 		byte prevAction; // code for the move swap(i,j), i<j, i and j between [0, 15], 4bit = i, 4bits=j 
 		public Evalue() {}
 	}
 	static class FrontierLeaf {
 		int value; // order value 
 		int cost; // nb steps from start
-		BigInteger state=null; // current board
+		StateCode state=null; // current board
 		byte prevAction; // "this" results from prevAction
 		Evalue previous=null; // "this" results from board and previous path
 		public FrontierLeaf() {}
@@ -39,24 +94,31 @@ public class SASolver extends Solver {
 		public int compare(Object o1, Object o2) {
 			FrontierLeaf f1 = (FrontierLeaf)o1;
 			FrontierLeaf f2 = (FrontierLeaf)o2;
+//			return (f1.value <f2.value) ? -1 : ((f1.value ==f2.value)? ((f1.cost <f2.cost)? -1 : (f1.cost==f2.cost)? 0:1) : 1 );
 			return (f1.value <f2.value) ? -1 : ((f1.value ==f2.value)? 0 : 1 );
 		}
 	}	
 	static interface Heuristic {
-		public int distanceToArrival(BigInteger arrival);
+		public int distanceToArrival(StateCode arrival);
 	}
 	
 	static class HeuristicByPermutation implements Heuristic{
 		byte[] m_arrival;
-		public HeuristicByPermutation(BigInteger arrival) {
+		public HeuristicByPermutation(StateCode arrival) {
 			m_arrival = arrival.toByteArray();			
 		}
 
 		/**
 		 * Heuristic based on the number of direct permutation between state and arrival
 		 * */
-		public int distanceToArrival(BigInteger state) {
+		public int distanceToArrival(StateCode state) {
 			byte[] bstate = state.toByteArray();
+
+			if (bstate.length>8) {
+				System.out.println("PB state "+bstate.length);
+				SASolver.printState(state);
+			}
+			
 			int differences = 0;
 			int diff = 0;
 			for (int i = 0; i < bstate.length; i++) {
@@ -69,8 +131,10 @@ public class SASolver extends Solver {
 			return differences/2;
 		}
 	}		
-	
-	BigInteger arrivalState;
+
+	/*non static part**/
+	Heuristic m_hFunc=null;
+	StateCode arrivalState;
 	public SASolver(CostFunction costFunction) {
 		super(costFunction);
 		
@@ -80,14 +144,14 @@ public class SASolver extends Solver {
 		super(null);
 	}
 	
-	Heuristic m_hFunc=null;
 	@Override
 	protected Solution solve(Board board, boolean showChanges) throws PuzzleException, CloneNotSupportedException {
-		HashMap<BigInteger, Evalue> visitedNodes = new HashMap<BigInteger, Evalue>();
+		HashMap<StateCode, Evalue> visitedNodes = new HashMap<StateCode, Evalue>();
 		PriorityQueue<FrontierLeaf> frontierSet = new PriorityQueue<FrontierLeaf>(100, new LeafComp());
 				
 		arrivalState = buildArrivalState(); 
 		/*        System.out.println(" SAM TO REMOVE fake arrival state");
+		board = new Board(4);
 		board.makeMove(new Move(Piece.pieceForNumber(15), Location.locationFor(3, 3, 4)), true);
 		board.makeMove(new Move(Piece.pieceForNumber(11), Location.locationFor(2, 3, 4)), true);
 		board.makeMove(new Move(Piece.pieceForNumber(7), Location.locationFor(2, 2, 4)), true);
@@ -100,7 +164,7 @@ public class SASolver extends Solver {
 		visitedNodes.put(currEvalue.state, currEvalue);
 
 		
-		if (showChanges) {
+		/*if (true) {
 			System.out.println(" Dump of initial Board");
 			board.describeBoard();
 			System.out.println(" Dump of initialState");
@@ -108,7 +172,7 @@ public class SASolver extends Solver {
 			System.out.println(" Dump of arrivalState");
 			printState(arrivalState);
 			
-			/* test serialization of action byte + move on a BigInt board
+			// test serialization of action byte + move on a BigInt board
 			int firstCell = 7; 
 			int otherCell = 11;						
 			byte action = buildAction( firstCell, otherCell);
@@ -118,21 +182,21 @@ public class SASolver extends Solver {
 			System.out.println(" from action firstCell= "+firstCell);
 			System.out.println(" from action otherCell= "+otherCell);
 			
-			BigInteger newState = moveState(currLeaf.state, action);
+			StateCode newState = moveState(currLeaf.state, action);
 			System.out.println(" Dump before move ");
 			printState(currLeaf.state);
 			System.out.println(" Dump of moved state");
 			printState(newState);
-			*/
-		}
+			
+		}*/
 		
 		
 		// propagation loop
 		int counter = 0;
-		while(!currEvalue.state.equals(arrivalState)) {
+		while( !currEvalue.state.equals(arrivalState)) {
 			++counter;
 			
-			if (counter%1000==0) {
+			if (counter%100==0) {
 				System.out.println(" propagation loop :"+ counter+" cost :"+ currLeaf.cost+" value :"+ currLeaf.value);
 				
 			}
@@ -144,7 +208,7 @@ public class SASolver extends Solver {
 				byte action = buildAction(zeroCellIndex, otherCellIndex);
 				// test backtrack
 				if (action!=currEvalue.prevAction) {
-					BigInteger newState = moveState(currEvalue.state, action);
+					StateCode newState = moveState(currEvalue.state, action);
 					// test for previous visit
 					if (!visitedNodes.containsKey(newState)) {
 						// create new leaf
@@ -157,7 +221,7 @@ public class SASolver extends Solver {
 				byte action = buildAction(otherCellIndex, zeroCellIndex);
 				// test backtrack
 				if (action!=currEvalue.prevAction) {
-					BigInteger newState = moveState(currEvalue.state, action);
+					StateCode newState = moveState(currEvalue.state, action);
 					// test for previous visit
 					if (!visitedNodes.containsKey(newState)) {
 						// create new leaf
@@ -170,7 +234,7 @@ public class SASolver extends Solver {
 				byte action = buildAction(zeroCellIndex, otherCellIndex);
 				// test backtrack
 				if (action!=currEvalue.prevAction) {
-					BigInteger newState = moveState(currEvalue.state, action);
+					StateCode newState = moveState(currEvalue.state, action);
 					// test for previous visit
 					if (!visitedNodes.containsKey(newState)) {
 						// create new leaf
@@ -183,7 +247,7 @@ public class SASolver extends Solver {
 				byte action = buildAction(otherCellIndex, zeroCellIndex);
 				// test backtrack
 				if (action!=currEvalue.prevAction) {
-					BigInteger newState = moveState(currEvalue.state, action);
+					StateCode newState = moveState(currEvalue.state, action);
 					// test for previous visit
 					if (!visitedNodes.containsKey(newState)) {
 						// create new leaf
@@ -202,16 +266,25 @@ public class SASolver extends Solver {
 			currEvalue = createEvalue(currLeaf);
 			// store evalue for fast retrieval
 			visitedNodes.put(currEvalue.state, currEvalue);
+			
+//			System.out.println("SAM TO REMOVE loop from currEvalue.state ");
+//			printState(currEvalue.state);			
+			
 		}
 		
+		System.out.println("SAM TO REMOVE SOLUTION final cost "+currLeaf.cost+" value "+currLeaf.value );
+		printState(currEvalue.state);		
 		return buildPath(currEvalue); 
 	}
 
 	/**
 	 * Transfrom the current state in a new state resulting from the swap of cells coded by action.
+	 * Copy the current state before transforming.
+	 * 
 	 * 
 	 * */
-	private BigInteger moveState(BigInteger state, byte action) {
+	private StateCode moveState(StateCode istate, byte action) {
+		StateCode state = new StateCode(istate);
 		byte[] pieces = state.toByteArray();		
 		int firstCell = 0x0F & (action >> 4); 
 		int otherCell = 0x0F & action;
@@ -243,7 +316,8 @@ public class SASolver extends Solver {
 		} else {
 			pieces[firstCell/2] = (byte) ((0xF0 & pieces[firstCell/2]) | (otherCellVal & 0x0F));
 		}		
-		return new BigInteger(pieces);
+		
+		return state;
 	}
 
 	/**
@@ -269,7 +343,7 @@ public class SASolver extends Solver {
 	 * @return index from 0 to 15 of the empty cell
 	 * @throws PuzzleException 
 	 */
-	private int getZeroCellIndex(BigInteger state) throws PuzzleException {
+	private int getZeroCellIndex(StateCode state) throws PuzzleException {
 		byte[] pieces = state.toByteArray();
 		
 		for (int i = 0; i < pieces.length; i++) {
@@ -284,7 +358,7 @@ public class SASolver extends Solver {
 	}
 
 	// create a new leaf from the current node and add it to the frontier
-	private void createNewLeaf(PriorityQueue<FrontierLeaf> frontierSet, FrontierLeaf currLeaf, Evalue currEvalue, byte action, BigInteger newState) {
+	private void createNewLeaf(PriorityQueue<FrontierLeaf> frontierSet, FrontierLeaf currLeaf, Evalue currEvalue, byte action, StateCode newState) {
 		FrontierLeaf newLeaf = new FrontierLeaf();
 		newLeaf.cost = currLeaf.cost + 1;
 		newLeaf.value = newLeaf.cost + m_hFunc.distanceToArrival(newState);
@@ -326,7 +400,7 @@ public class SASolver extends Solver {
 	/**
 	 * create a Move object from an action byte.
 	 **/
-	private Move createMove(BigInteger state, byte action) {
+	private Move createMove(StateCode state, byte action) {
 		// 
 		byte[] pieces = state.toByteArray();		
 		int firstCell = 0x0F & (action >> 4); 
@@ -392,26 +466,26 @@ public class SASolver extends Solver {
 	/**
 	 * shrink a Board object in a BigInt each 4 bits representing one call of the board.
 	 * */
-	private BigInteger createState(Board board) {
-		BigInteger res = BigInteger.valueOf(0);
-		for (int i = 0; i < 4; i++) {
-			int fourth = 0;
-			for (int j = 0; j < 4; j++) {				
-				Piece cell = board.pieceAt(j, i);
-				fourth = fourth << 4;
-				fourth |= cell.getPieceNumber();
-			}
-			res= res.shiftLeft(16);
-			res = res.add(BigInteger.valueOf(fourth));
+	private StateCode createState(Board board) {
+		StateCode res = new StateCode();
+		byte[] arr = res.toByteArray();
+		for (int i = 0; i < 16; i++) {
+			Piece cell = board.pieceAt(i%4, i/4);
+			if (i%2==1)
+				arr[i/2] = (byte) (arr[i/2] << 4);
+			
+			arr[i/2] |= (byte) (0x0F & cell.getPieceNumber());
+
 		}
-		
+		System.out.println("SAM TO REMOVE createState() ");
+		SASolver.printState(res);		
 		
 		
 		return res;
 	}
 
 	// helper func
-	private void printState(BigInteger state) {
+	static private void printState(StateCode state) {
 		byte[] pieces = state.toByteArray();
 		
 		for (int i = 0; i < pieces.length; i++) {
@@ -428,25 +502,15 @@ public class SASolver extends Solver {
 
 
 	// create the state (BigInterger) representing the target [1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 0] 
-	private BigInteger buildArrivalState() {
-		long part1 =0;
-		for (int i=1; i<=8; ++i) {
-			part1 |= i;
-			if (i<8)
-				part1 = part1 << 4;
+	private StateCode buildArrivalState() {
+		StateCode res = new StateCode();
+		byte[] arr = res.toByteArray();
+		for (int i=0; i<=15; ++i) {
+			if (i%2==1)
+				arr[i/2] = (byte) (arr[i/2] << 4);
+			arr[i/2] |= i+1;
 		}
-		BigInteger sol = BigInteger.valueOf(part1);
-		
-		part1 =0L;
-		for (int i=9; i<16; ++i) {
-			part1 |= i;
-			part1 = part1 << 4;
-		}
-		sol = sol.shiftLeft(32);
-
-		BigInteger part2 = BigInteger.valueOf(part1);
-		sol = sol.add( part2);
-		return sol;
+		return res;
 	}
 
 }

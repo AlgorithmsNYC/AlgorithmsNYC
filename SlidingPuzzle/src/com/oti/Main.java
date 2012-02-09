@@ -87,7 +87,9 @@ public class Main {
         // describe each board, from the solved state to the mixed up random state.
         // This is helpful to check that the method of getting the initial state is working properly
         System.out.println();
-        board.randomSolvableInitialState(2000, 25, showChanges);
+        
+        int itert = Integer.parseInt(args[0]);
+        board.randomSolvableInitialState(2000, itert, showChanges);
         System.out.println();
         solved = board.isSolved();
         System.out.println("Starting com.oti.Board State:  Solved(" + solved + ")");
@@ -119,11 +121,12 @@ public class Main {
         // Show results
         System.out.println("\nPuzzle: ");
         boardInInitialState.describeBoard();
-        System.out.printf("\ncom.oti.Solution: %d:%d sec:milli\n", solver.getSolutionTimeMilliSec()/1000, solver.getSolutionTimeMilliSec()%1000);
+        System.out.printf("\ncom.oti.Solution: \n");
         solution.describeSolution();
-        System.out.println("\nResults: ");
+        System.out.println("\nResults: steps["+solution.size()+"]");
         resultsOfSolution.describeBoard();
 
         System.out.println("\nSolved: " + resultsOfSolution.isSolved());
+        System.out.printf("\ncom.oti.Solution: %d:%d sec:milli\n", solver.getSolutionTimeMilliSec()/1000, solver.getSolutionTimeMilliSec()%1000);
     }
 }
