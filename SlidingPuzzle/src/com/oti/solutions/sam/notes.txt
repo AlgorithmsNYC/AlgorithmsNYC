@@ -1,0 +1,114 @@
+exec 25 steps avec StateCode
+
+propagation loop :4051000 cost :18 value :25
+ propagation loop :4051100 cost :18 value :25
+ propagation loop :4051200 cost :19 value :25
+ propagation loop :4051300 cost :18 value :25
+ propagation loop :4051400 cost :19 value :25
+ propagation loop :4051500 cost :19 value :25
+ propagation loop :4051600 cost :19 value :25
+SAM TO REMOVE SOLUTION final cost 25 value 25
+ 1 2 3 4  5 6 7 8  9 10 11 12  13 14 15 0 
+
+Validating com.oti.Solution: 
+
+Puzzle: 
+  1	  3	  2	  7	
+  9	  6	 - 	  4	
+ 10	  5	 11	 12	
+ 13	 14	  8	 15	
+
+com.oti.Solution: 
+com.oti.Move:   2 to: (2,1)
+com.oti.Move:   3 to: (2,0)
+com.oti.Move:   6 to: (1,0)
+com.oti.Move:   5 to: (1,1)
+com.oti.Move:  11 to: (1,2)
+com.oti.Move:   8 to: (2,2)
+com.oti.Move:  15 to: (2,3)
+com.oti.Move:  12 to: (3,3)
+com.oti.Move:   4 to: (3,2)
+com.oti.Move:   7 to: (3,1)
+com.oti.Move:   3 to: (3,0)
+com.oti.Move:   2 to: (2,0)
+com.oti.Move:   7 to: (2,1)
+com.oti.Move:   4 to: (3,1)
+com.oti.Move:   8 to: (3,2)
+com.oti.Move:  11 to: (2,2)
+com.oti.Move:  10 to: (1,2)
+com.oti.Move:   9 to: (0,2)
+com.oti.Move:   5 to: (0,1)
+com.oti.Move:   6 to: (1,1)
+com.oti.Move:   2 to: (1,0)
+com.oti.Move:   3 to: (2,0)
+com.oti.Move:   4 to: (3,0)
+com.oti.Move:   8 to: (3,1)
+com.oti.Move:  12 to: (3,2)
+
+Results: steps[25]
+  1	  2	  3	  4	
+  5	  6	  7	  8	
+  9	 10	 11	 12	
+ 13	 14	 15	 - 	
+
+Solved: true
+
+com.oti.Solution: 51:577 sec:milli
+
+
+exec 25 steps avec BigInteger
+propagation loop :2302000 cost :18 value :25
+ propagation loop :2303000 cost :19 value :25
+ propagation loop :2304000 cost :18 value :25
+ propagation loop :2305000 cost :19 value :25
+ propagation loop :2306000 cost :19 value :25
+ propagation loop :2307000 cost :19 value :25
+ propagation loop :2308000 cost :18 value :25
+ propagation loop :2309000 cost :19 value :25
+ propagation loop :2310000 cost :20 value :25
+
+Validating com.oti.Solution: 
+
+Puzzle: 
+  1	  3	  2	  7	
+  9	  6	 - 	  4	
+ 10	  5	 11	 12	
+ 13	 14	  8	 15	
+
+com.oti.Solution: 
+com.oti.Move:   2 to: (2,1)
+com.oti.Move:   3 to: (2,0)
+com.oti.Move:   6 to: (1,0)
+com.oti.Move:   5 to: (1,1)
+com.oti.Move:  11 to: (1,2)
+com.oti.Move:   8 to: (2,2)
+com.oti.Move:  15 to: (2,3)
+com.oti.Move:  12 to: (3,3)
+com.oti.Move:   4 to: (3,2)
+com.oti.Move:   7 to: (3,1)
+com.oti.Move:   3 to: (3,0)
+com.oti.Move:   2 to: (2,0)
+com.oti.Move:   7 to: (2,1)
+com.oti.Move:   4 to: (3,1)
+com.oti.Move:   8 to: (3,2)
+com.oti.Move:  11 to: (2,2)
+com.oti.Move:  10 to: (1,2)
+com.oti.Move:   9 to: (0,2)
+com.oti.Move:   5 to: (0,1)
+com.oti.Move:   6 to: (1,1)
+com.oti.Move:   2 to: (1,0)
+com.oti.Move:   3 to: (2,0)
+com.oti.Move:   4 to: (3,0)
+com.oti.Move:   8 to: (3,1)
+com.oti.Move:  12 to: (3,2)
+
+Results: steps[25]
+  1	  2	  3	  4	
+  5	  6	  7	  8	
+  9	 10	 11	 12	
+ 13	 14	 15	 - 	
+
+Solved: true
+
+com.oti.Solution: 25:264 sec:milli
+
