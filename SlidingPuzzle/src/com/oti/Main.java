@@ -24,6 +24,10 @@ package com.oti;
  * Time: 7:10 PM
  */
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
 import com.oti.solutions.eb.EBDistanceCostFunction;
 import com.oti.solutions.eb.EBSolver;
 import com.oti.solutions.sam.SASolver;
@@ -51,6 +55,17 @@ import com.oti.solutions.sam.SASolver;
  */
 public class Main {
     public static void main(String[] args) throws Exception {
+    	SolverFactory.registerSolver("com.oti.FakeSolver");
+    	SolverFactory.registerSolver("com.oti.solutions.eb.EBSolver");
+    	SolverFactory.registerSolver("com.oti.solutions.sam.SASolver");
+    	SolverFactory.registerSolver("com.oti.solutions.sam.SASolverNoBigInt");
+    	
+    	CLQuestions prompt = new CLQuestions();
+    	prompt.askUser();
+    	Solver solver = prompt.getSolver();
+    	int itert = prompt.getItert();
+    	
+		
         boolean showChanges = false;
 
         // Create and show a standard 4x4 board
@@ -88,7 +103,6 @@ public class Main {
         // This is helpful to check that the method of getting the initial state is working properly
         System.out.println();
         
-        int itert = Integer.parseInt(args[0]);
         board.randomSolvableInitialState(2000, itert, showChanges);
         System.out.println();
         solved = board.isSolved();
@@ -109,7 +123,7 @@ public class Main {
         System.out.println("************* Solve Puzzle ************");
         Board boardInInitialState = board.clone();
         //EBSolver solver = new EBSolver(new EBDistanceCostFunction(4));
-        SASolver solver = new SASolver();
+        //SASolver solver = new SASolver();
 //        com.oti.Solver solver = new com.oti.FakeSolver(new com.oti.SimpleCostFunction());
         Solution solution = solver.solveBoard(board, showChanges);
 

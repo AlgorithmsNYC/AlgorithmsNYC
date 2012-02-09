@@ -42,6 +42,13 @@ public class EBSolver extends Solver {
     protected Map<Board, Double> _leastExpensiveCostOnBoard;
     protected int _maxFrontierSize;
 
+	 /**
+	  *  def ctor for Class.forName
+	  */
+    public EBSolver() {
+        super(new EBDistanceCostFunction(4));
+    }
+
     public EBSolver(CostFunction costFunction) {
         super(costFunction);
     }

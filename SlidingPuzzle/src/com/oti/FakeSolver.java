@@ -32,6 +32,13 @@ package com.oti;
  * write their own concrete implementatio of com.oti.Solver.
  */
 public class FakeSolver extends Solver {
+	/**
+	 * def ctor for Class.forName
+	 * */
+    public FakeSolver() {
+        super(new com.oti.SimpleCostFunction());
+    }   
+
     public FakeSolver(CostFunction costFunction) {
         super(costFunction);
     }

@@ -17,7 +17,7 @@ import com.oti.PuzzleException;
 import com.oti.Solution;
 import com.oti.Solver;
 
-public class SASolver extends Solver {
+public class SASolverNoBigInt extends Solver {
 	
 	static class StateCode {
 	    /**
@@ -116,7 +116,7 @@ public class SASolver extends Solver {
 
 			if (bstate.length>8) {
 				System.out.println("PB state "+bstate.length);
-				SASolver.printState(state);
+				SASolverNoBigInt.printState(state);
 			}
 			
 			int differences = 0;
@@ -135,12 +135,12 @@ public class SASolver extends Solver {
 	/*non static part**/
 	Heuristic m_hFunc=null;
 	StateCode arrivalState;
-	public SASolver(CostFunction costFunction) {
+	public SASolverNoBigInt(CostFunction costFunction) {
 		super(costFunction);
 		
 	}
 
-	public SASolver() {
+	public SASolverNoBigInt() {
 		super(null);
 	}
 	
@@ -478,7 +478,7 @@ public class SASolver extends Solver {
 
 		}
 		System.out.println("SAM TO REMOVE createState() ");
-		SASolver.printState(res);		
+		SASolverNoBigInt.printState(res);		
 		
 		
 		return res;
