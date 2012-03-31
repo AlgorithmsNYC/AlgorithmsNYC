@@ -5,7 +5,7 @@
 package rselect;
 
 import java.util.Arrays;
-import java.util.Random;
+import util.CommonFunctions;
 
 /**
  *
@@ -50,14 +50,16 @@ public class RSelect {
     
     private static int rSelect(int[] array, int start, int end, int orderStatistic) {
         
-        int pivotIndex = partition(array, start, end);
+        int pivotIndex = CommonFunctions.partition(array, start, end);
         
         
         if(pivotIndex == orderStatistic) {
             return array[pivotIndex];
+            
         } else if(pivotIndex < orderStatistic) {            
 //            eraseOtherSide(array, start, pivotIndex - 1);
             return rSelect(array, pivotIndex + 1, end, orderStatistic);
+        
         } else {
 //            eraseOtherSide(array, pivotIndex + 1, end);
             return rSelect(array, start, pivotIndex - 1, orderStatistic);
@@ -65,41 +67,13 @@ public class RSelect {
         
     }
     
-    private static int partition(int[] array, int start, int end) {
-        
-        int n = end + 1 - start;
-
-        int pivotIndex = start + (new Random().nextInt(n));
-        int pivotValue = array[pivotIndex];
-        
-        System.out.print("-pivotIndex=" + pivotIndex + ", pivotValue=" + pivotValue);
-        
-        swap(array, pivotIndex, end);
-                
-        int slow = start - 1;
-        for(int fast = start; fast < end; fast++)
-            if(array[fast] < pivotValue)
-                swap(array, ++slow, fast);
-
-        swap(array, ++slow, end);
-
-        
-        System.out.println(", tmpArray=" + Arrays.toString(array));
-        
-        return slow;
-        
-    }
     
     private static void eraseOtherSide(int[] array, int index1, int index2) {
-        for(int i = index1; i <= index2; i++) {
+        for(int i = index1; i <= index2; i++)
             array[i] = -1;
-        }
+        
     }
     
-    private static void swap(int[] array, int index1, int index2) {      
-        int tmp = array[index1];
-        array[index1] = array[index2];
-        array[index2] = tmp;
-    }
+
 
 }
