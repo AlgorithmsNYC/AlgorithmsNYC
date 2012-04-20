@@ -7,6 +7,7 @@ package graph;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  *
@@ -29,6 +30,10 @@ public class UndirectedGraph {
     public void addEdge(Integer src, Integer dest) {
         data.get(src).add(dest);
         data.get(dest).add(src);
+    }
+    
+    public Set<Integer> getNodes() {
+        return data.keySet();
     }
     
     public ArrayList<Integer> getEdges(int node) {
