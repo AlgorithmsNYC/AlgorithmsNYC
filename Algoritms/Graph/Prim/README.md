@@ -17,3 +17,7 @@ Adjecency matrix
 ## Description
 
 Prim's algorithm is a greedy algorithm that finds a minimum spanning tree for a connected weighted undirected graph.
+
+## Sample animation
+
+![Prim's algorithm](http://upload.wikimedia.org/wikipedia/en/3/33/Prim-algorithm-animation-2.gif)
