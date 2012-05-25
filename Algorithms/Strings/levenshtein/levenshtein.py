@@ -28,5 +28,5 @@ if __name__ == '__main__':
     if len(sys.argv) == 3:
         print(lev(sys.argv[1], sys.argv[2]))
     else:
-        print("\nLevenshtein.py: calculate the Levenshtein Distance between 2 words\n\nUsage: \n$ python levenshtein.py <word1> <word2>\n")
+        print("\nlevenshtein.py: calculate the Levenshtein Distance between 2 words\n\nUsage: \n$ python levenshtein.py <word1> <word2>\n")
         
