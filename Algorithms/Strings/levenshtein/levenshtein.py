@@ -1,4 +1,4 @@
-
+#!/usr/env/python
 
 def lev(w1, w2):
     """
@@ -21,3 +21,12 @@ def lev(w1, w2):
                                matrix[j][i-1] + 1,
                                matrix[j-1][i-1] + 1])
     return matrix[-1][-1] # bottom, right-most value
+
+
+if __name__ == '__main__':
+    import sys
+    if len(sys.argv) == 3:
+        print(lev(sys.argv[1], sys.argv[2]))
+    else:
+        print("\nLevenshtein.py: calculate the Levenshtein Distance between 2 words\n\nUsage: \n$ python levenshtein.py <word1> <word2>\n")
+        
